@@ -16,13 +16,14 @@ int retrieveData(uint16_t data[], int address, modbus_t* connection);
 int getRunningHours(int address, modbus_t* connection);
 int calcTime(time_t start);
 int calcRunningHours(int currentRunMinutes);
-void errorHandling(int addressRx[], int addressTx[]);
+void errorHandling(int lampIDs[]);
 int calcPower(int currentLevel, int maxKW);
 int calcCapicity(int level);
+void setLevel(int level, int lampID);
+void toggleLamp(int state, int lampID);
 
-// Start addresses for Tx & Rx
-int addressRx[5] = { 3000, 3006, 3012, 3018, 3024 };
-int addressTx[5] = { 3002, 3008, 3014, 3020, 3026 };
+// Lamp ID's
+int lampIDs[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 int main() {
 
@@ -31,14 +32,14 @@ int main() {
     ctx = modbus_new_tcp("127.0.0.1", 502);
     if (ctx == NULL) {
         std::cerr << "Failed to create Modbus context: " << modbus_strerror(errno) << std::endl;
-        errorHandling(addressRx, addressTx);
+        errorHandling(lampIDs);
         return -1;
     }
 
     if (modbus_connect(ctx) == -1) {
         std::cerr << "Connection failed: " << modbus_strerror(errno) << std::endl;
         modbus_free(ctx);
-        errorHandling(addressRx, addressTx);
+        errorHandling(lampIDs);
         return -1;
     }
 
@@ -61,8 +62,9 @@ int main() {
     int energieverbr[5] = { 0, 0, 0, 0, 0 };
     int branduren[5] = { 0, 0, 0, 0, 0 };
 
-    // Lamp ID's
-    int lampIDs[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    // Start addresses for Tx & Rx
+    int addressRx[5] = { 3000, 3006, 3012, 3018, 3024 };
+    int addressTx[5] = { 3002, 3008, 3014, 3020, 3026 };
 
     // Get current running hours in minutes from the server
     for (int i = 0; i < 5; ++i) {
@@ -87,7 +89,7 @@ int main() {
             }
             // Calculating the capacity
             capaciteit[i] = calcCapicity(level[i]);
-           // std::cout << "Brand uren zone: " << (i + 1) << " Minuten: " << branduren[i] << std::endl;
+           // std::cout << "Brand uren zone: " << (i + 1) << " Minuten: " << branduren[i] << " power: " << energieverbr[i] << " capaciteit: " << capaciteit[i]  << std::endl;
         }
         
 
@@ -95,7 +97,7 @@ int main() {
             prevActMinutes = activeMinutes;
         }
 
-        //Sending data to the server
+        //Sending & retrieveing data to and from the server
         for (int i = 0; i < 5; ++i) {
             // Prepare data to send
             uint16_t dataTx[4] = { level[i], capaciteit[i], energieverbr[i], branduren[i]};
@@ -105,7 +107,19 @@ int main() {
                 std::cout << "Data sent successfully zone: " << (i+1) << std::endl;
             }
             else {
-                errorHandling(addressRx, addressTx);
+                errorHandling(lampIDs);
+            }
+
+            // Prepare data to be retrieved
+            uint16_t dataRx[2];
+
+            if (retrieveData(dataRx, addressRx[i], ctx) == 0) {
+                std::cout << "Data read from Modbus registers zone: " << (i + 1) << std::endl;
+                level[i] = dataRx[0]; //setstand[i] = dataRx[0];
+                setauto[i] = dataRx[1];
+            }
+            else {
+                errorHandling(lampIDs);
             }
         }
     }
@@ -126,7 +140,7 @@ int sendData(uint16_t data[], int address, modbus_t* connection) {
         std::cerr << "Write error: " << modbus_strerror(errno) << std::endl;
         modbus_close(connection);
         modbus_free(connection);
-        errorHandling(addressRx, addressTx);
+        errorHandling(lampIDs);
         return -1;
     }
     return 0;
@@ -140,7 +154,7 @@ int retrieveData(uint16_t data[], int address, modbus_t* connection) { // Correc
         std::cerr << "Read error: " << modbus_strerror(errno) << std::endl;
         modbus_close(connection);
         modbus_free(connection);
-        errorHandling(addressRx, addressTx);
+        errorHandling(lampIDs);
         return -1;
     }
     return 0;
@@ -158,7 +172,7 @@ int getRunningHours(int address, modbus_t* connection) {
         }
     }
     else {
-        errorHandling(addressRx, addressTx);
+        errorHandling(lampIDs);
     }
     return runningMinutes = dataRx[0];
 
@@ -199,12 +213,14 @@ int calcCapicity(int level) {
 }
 
 // Error handling
-void errorHandling(int addressRx[], int addressTx[]) {
-
+void errorHandling(int lampIDs[]) {
+    std::cerr << "FATAL ERROR" <<  std::endl;
     for (int i = 0; i < 5; ++i) {
-
+        toggleLamp(1, lampIDs[i]);
+        toggleLamp(1, lampIDs[i + 1]);
+        setLevel(100, lampIDs[i]);
+        setLevel(100, lampIDs[i+1]);
     }
-    // Function for settings all the light to level 100%
 }
 
 // Set level of the light (0-100%)
@@ -213,7 +229,7 @@ void setLevel(int level, int lampID) {
     // Rest of the code to set the lamp level
 }
 
-// Set level of the light (0-100%)
+// Turn light off or on (0-1)
 void toggleLamp(int state, int lampID) {
     // Rest of the code to set the lamp level
 }
