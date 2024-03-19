@@ -1,0 +1,6 @@
+﻿  modbus-test.cpp
+C:\Users\ElwinHammer\source\repos\modbus-test - kopie - kopie\modbus-test\modbus-test.cpp(43,28): warning C4838: conversion from 'int' to 'uint16_t' requires a narrowing conversion
+C:\Users\ElwinHammer\source\repos\modbus-test - kopie - kopie\modbus-test\modbus-test.cpp(43,36): warning C4838: conversion from 'int' to 'uint16_t' requires a narrowing conversion
+C:\Users\ElwinHammer\source\repos\modbus-test - kopie - kopie\modbus-test\modbus-test.cpp(43,48): warning C4838: conversion from 'int' to 'uint16_t' requires a narrowing conversion
+C:\Users\ElwinHammer\source\repos\modbus-test - kopie - kopie\modbus-test\modbus-test.cpp(43,62): warning C4838: conversion from 'int' to 'uint16_t' requires a narrowing conversion
+  modbus-test.vcxproj -> C:\Users\ElwinHammer\source\repos\modbus-test - kopie - kopie\x64\Debug\modbus-test.exe
