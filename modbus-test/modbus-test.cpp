@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstring>
+#include <ctime>
 
 #ifndef _MSC_VER
 #include <unistd.h>
@@ -12,6 +13,16 @@
 // Function prototypes
 int sendData(uint16_t data[], int address, modbus_t* connection);
 int retrieveData(uint16_t data[], int address, modbus_t* connection);
+int getRunningHours(int address, modbus_t* connection);
+int calcTime(time_t start);
+int calcRunningHours(int currentRunMinutes);
+void errorHandling(int addressRx[], int addressTx[]);
+int calcPower(int currentLevel, int maxKW);
+int calcCapicity(int level);
+
+// Start addresses for Tx & Rx
+int addressRx[5] = { 3000, 3006, 3012, 3018, 3024 };
+int addressTx[5] = { 3002, 3008, 3014, 3020, 3026 };
 
 int main() {
 
@@ -20,52 +31,85 @@ int main() {
     ctx = modbus_new_tcp("127.0.0.1", 502);
     if (ctx == NULL) {
         std::cerr << "Failed to create Modbus context: " << modbus_strerror(errno) << std::endl;
+        errorHandling(addressRx, addressTx);
         return -1;
     }
 
     if (modbus_connect(ctx) == -1) {
         std::cerr << "Connection failed: " << modbus_strerror(errno) << std::endl;
         modbus_free(ctx);
+        errorHandling(addressRx, addressTx);
         return -1;
     }
+
+    // Start time in seconds
+    time_t startTime = time(NULL);
+
+    // system time
+    int activeMinutes = 0;
+    int prevActMinutes = 0;
+
+    int maxW = 18; // W per zone
 
     // System write variables per zone
     int setstand[5] = { 0, 0, 0, 0, 0 };
     int setauto[5] = { 0, 0, 0, 0, 0 };
 
     // System read variables per zone
-    int level[5] = { 0, 0, 0, 0, 0 };
+    int level[5] = { 1, 0, 0, 0, 0 };
     int capaciteit[5] = { 0, 0, 0, 0, 0 };
     int energieverbr[5] = { 0, 0, 0, 0, 0 };
     int branduren[5] = { 0, 0, 0, 0, 0 };
 
     // Lamp ID's
     int lampIDs[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-    int zone1 = { lampIDs[0], lampIDs[1] };
 
-    // Prepare data to send
-    uint16_t dataTx[4] = { level, capaciteit, energieverbr, branduren };
-    int modbusStartAddressTx = 3000;
+    // Get current running hours in minutes from the server
+    for (int i = 0; i < 5; ++i) {
+        branduren[i] = getRunningHours((addressTx[i] + 3), ctx);
+       // std::cout << "Brand uren zone: " << (i + 1) << " Minuten: " << branduren[i] << " Address: " << (addressTx[i] + 3) << std::endl;
+    }
 
     for (;;) {
+        int activeMinutes = calcTime(startTime);
+       // std::cout << "Active minutes: " << activeMinutes << std::endl;
 
-        // Send data
-        if (sendData(dataTx, modbusStartAddressTx, ctx) == 0) {
-            std::cout << "Data sent successfully." << std::endl;
+        // Keep track of running hours (in minutes)
+        for (int i = 0; i < 5; ++i) {
+            if (level[i] != 0) {
+                // Light is on, time tracking needed
+                if (prevActMinutes != activeMinutes) {
+                    branduren[i] = calcRunningHours(branduren[i]);
+                }
+                
+                // Light is on, power consumption feedback is needed and convert it to kW
+                energieverbr[i] = (calcPower(level[i], maxW) / 1000);
+            }
+            // Calculating the capacity
+            capaciteit[i] = calcCapicity(level[i]);
+           // std::cout << "Brand uren zone: " << (i + 1) << " Minuten: " << branduren[i] << std::endl;
+        }
+        
+
+        if (prevActMinutes != activeMinutes) {
+            prevActMinutes = activeMinutes;
         }
 
-        // Prepare data to be retrieved
-        uint16_t dataRx[2]; // Corrected declaration
-        int modbusStartAddressRx = 3000;
+        //Sending data to the server
+        for (int i = 0; i < 5; ++i) {
+            // Prepare data to send
+            uint16_t dataTx[4] = { level[i], capaciteit[i], energieverbr[i], branduren[i]};
 
-        if (retrieveData(dataRx, modbusStartAddressRx, ctx) == 0) {
-            std::cout << "Data read from Modbus registers:" << std::endl;
-            for (int i = 0; i < 2; ++i) { // Changed the loop limit to 2
-                std::cout << "Register " << i << ": " << dataRx[i] << std::endl; // Corrected accessing the array directly
+            // Send data
+            if (sendData(dataTx, addressTx[i], ctx) == 0) {
+                std::cout << "Data sent successfully zone: " << (i+1) << std::endl;
+            }
+            else {
+                errorHandling(addressRx, addressTx);
             }
         }
-
     }
+
 
     // Close connection
     modbus_close(ctx);
@@ -82,6 +126,7 @@ int sendData(uint16_t data[], int address, modbus_t* connection) {
         std::cerr << "Write error: " << modbus_strerror(errno) << std::endl;
         modbus_close(connection);
         modbus_free(connection);
+        errorHandling(addressRx, addressTx);
         return -1;
     }
     return 0;
@@ -95,9 +140,44 @@ int retrieveData(uint16_t data[], int address, modbus_t* connection) { // Correc
         std::cerr << "Read error: " << modbus_strerror(errno) << std::endl;
         modbus_close(connection);
         modbus_free(connection);
+        errorHandling(addressRx, addressTx);
         return -1;
     }
     return 0;
+}
+
+
+// Function for getting the last running hours from the server
+int getRunningHours(int address, modbus_t* connection) {
+    int runningMinutes = 0;
+    uint16_t dataRx[2]; 
+    if (retrieveData(dataRx, address, connection) == 0) {
+        std::cout << "Data read from Modbus registers:" << std::endl;
+        for (int i = 0; i < 2; ++i) { // Changed the loop limit to 2
+            std::cout << "Register " << i << ": " << dataRx[i] << std::endl; // Corrected accessing the array directly
+        }
+    }
+    else {
+        errorHandling(addressRx, addressTx);
+    }
+    return runningMinutes = dataRx[0];
+
+}
+
+// Calculate the time
+int calcTime(time_t startTime) {
+    // Calculate elapsed minutes
+    time_t currentTime = time(NULL);
+    int elapsedMinutes = (currentTime - startTime) / 60;
+    // Sleep for 1 minute (60 seconds)
+    // Note: This is not precise, but it's a simple way to introduce a delay
+    // without external libraries
+    for (int i = 0; i < 60; ++i) {
+        // Introduce a small delay
+        for (volatile int j = 0; j < 1000000; ++j) {}
+    }
+
+    return elapsedMinutes;
 }
 
 // Calculate the current running hours (in minutes)
@@ -119,7 +199,11 @@ int calcCapicity(int level) {
 }
 
 // Error handling
-void errorHandling() {
+void errorHandling(int addressRx[], int addressTx[]) {
+
+    for (int i = 0; i < 5; ++i) {
+
+    }
     // Function for settings all the light to level 100%
 }
 

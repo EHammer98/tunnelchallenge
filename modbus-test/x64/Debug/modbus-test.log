@@ -1,6 +1,316 @@
-﻿  modbus-test.cpp
-C:\Users\ElwinHammer\source\repos\modbus-test - kopie - kopie\modbus-test\modbus-test.cpp(43,28): warning C4838: conversion from 'int' to 'uint16_t' requires a narrowing conversion
-C:\Users\ElwinHammer\source\repos\modbus-test - kopie - kopie\modbus-test\modbus-test.cpp(43,36): warning C4838: conversion from 'int' to 'uint16_t' requires a narrowing conversion
-C:\Users\ElwinHammer\source\repos\modbus-test - kopie - kopie\modbus-test\modbus-test.cpp(43,48): warning C4838: conversion from 'int' to 'uint16_t' requires a narrowing conversion
-C:\Users\ElwinHammer\source\repos\modbus-test - kopie - kopie\modbus-test\modbus-test.cpp(43,62): warning C4838: conversion from 'int' to 'uint16_t' requires a narrowing conversion
-  modbus-test.vcxproj -> C:\Users\ElwinHammer\source\repos\modbus-test - kopie - kopie\x64\Debug\modbus-test.exe
+﻿  modbus-data.c
+  modbus-rtu.c
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-data.c(77,6): warning C4273: 'modbus_set_bits_from_byte': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(304,17):
+  see previous definition of 'modbus_set_bits_from_byte'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-data.c(88,6): warning C4273: 'modbus_set_bits_from_bytes': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(305,17):
+  see previous definition of 'modbus_set_bits_from_bytes'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-data.c(106,9): warning C4273: 'modbus_get_byte_from_bits': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(309,20):
+  see previous definition of 'modbus_get_byte_from_bits'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-data.c(125,7): warning C4273: 'modbus_get_float_abcd': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(313,18):
+  see previous definition of 'modbus_get_float_abcd'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-data.c(143,7): warning C4273: 'modbus_get_float_dcba': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(314,18):
+  see previous definition of 'modbus_get_float_dcba'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-data.c(161,7): warning C4273: 'modbus_get_float_badc': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(315,18):
+  see previous definition of 'modbus_get_float_badc'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-data.c(179,7): warning C4273: 'modbus_get_float_cdab': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(316,18):
+  see previous definition of 'modbus_get_float_cdab'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-data.c(197,7): warning C4273: 'modbus_get_float': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(312,18):
+  see previous definition of 'modbus_get_float'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-data.c(209,6): warning C4273: 'modbus_set_float_abcd': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(319,17):
+  see previous definition of 'modbus_set_float_abcd'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-data.c(228,6): warning C4273: 'modbus_set_float_dcba': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(320,17):
+  see previous definition of 'modbus_set_float_dcba'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-data.c(247,6): warning C4273: 'modbus_set_float_badc': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(321,17):
+  see previous definition of 'modbus_set_float_badc'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-data.c(266,6): warning C4273: 'modbus_set_float_cdab': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(322,17):
+  see previous definition of 'modbus_set_float_cdab'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-data.c(285,6): warning C4273: 'modbus_set_float': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(318,17):
+  see previous definition of 'modbus_set_float'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-rtu.c(880,5): warning C4273: 'modbus_rtu_set_serial_mode': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-rtu.h(25,16):
+  see previous definition of 'modbus_rtu_set_serial_mode'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-rtu.c(934,5): warning C4273: 'modbus_rtu_get_serial_mode': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-rtu.h(26,16):
+  see previous definition of 'modbus_rtu_get_serial_mode'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-rtu.c(958,5): warning C4273: 'modbus_rtu_get_rts': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-rtu.h(33,16):
+  see previous definition of 'modbus_rtu_get_rts'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-rtu.c(982,5): warning C4273: 'modbus_rtu_set_rts': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-rtu.h(32,16):
+  see previous definition of 'modbus_rtu_set_rts'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-rtu.c(1018,5): warning C4273: 'modbus_rtu_set_custom_rts': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-rtu.h(35,16):
+  see previous definition of 'modbus_rtu_set_custom_rts'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-rtu.c(1043,5): warning C4273: 'modbus_rtu_get_rts_delay': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-rtu.h(39,16):
+  see previous definition of 'modbus_rtu_get_rts_delay'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-rtu.c(1068,5): warning C4273: 'modbus_rtu_set_rts_delay': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-rtu.h(38,16):
+  see previous definition of 'modbus_rtu_set_rts_delay'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-rtu.c(1208,1): warning C4273: 'modbus_new_rtu': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-rtu.h(20,1):
+  see previous definition of 'modbus_new_rtu'
+  
+  modbus-tcp.c
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-tcp.c(336,14): warning C4244: '=': conversion from 'SOCKET' to 'int', possible loss of data
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-tcp.c(404,29): warning C4477: 'fprintf' : format string '%s' requires an argument of type 'char *', but variadic argument 1 has type 'WCHAR *'
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-tcp.c(404,29):
+  consider using '%ls' in the format string
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-tcp.c(404,29):
+  consider using '%lls' in the format string
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-tcp.c(404,29):
+  consider using '%Ls' in the format string
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-tcp.c(404,29):
+  consider using '%ws' in the format string
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-tcp.c(423,13): warning C4244: '=': conversion from 'SOCKET' to 'int', possible loss of data
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-tcp.c(434,49): warning C4267: 'function': conversion from 'size_t' to 'socklen_t', possible loss of data
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-tcp.c(506,5): warning C4273: 'modbus_tcp_listen': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-tcp.h(43,16):
+  see previous definition of 'modbus_tcp_listen'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-tcp.c(534,13): warning C4244: '=': conversion from 'SOCKET' to 'int', possible loss of data
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-tcp.c(578,5): warning C4273: 'modbus_tcp_pi_listen': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-tcp.h(47,16):
+  see previous definition of 'modbus_tcp_pi_listen'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-tcp.c(630,29): warning C4477: 'fprintf' : format string '%s' requires an argument of type 'char *', but variadic argument 1 has type 'WCHAR *'
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-tcp.c(630,29):
+  consider using '%ls' in the format string
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-tcp.c(630,29):
+  consider using '%lls' in the format string
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-tcp.c(630,29):
+  consider using '%Ls' in the format string
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-tcp.c(630,29):
+  consider using '%ws' in the format string
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-tcp.c(646,13): warning C4244: '=': conversion from 'SOCKET' to 'int', possible loss of data
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-tcp.c(665,45): warning C4267: 'function': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-tcp.c(695,5): warning C4273: 'modbus_tcp_accept': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-tcp.h(44,16):
+  see previous definition of 'modbus_tcp_accept'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-tcp.c(710,14): warning C4244: '=': conversion from 'SOCKET' to 'int', possible loss of data
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-tcp.c(729,5): warning C4273: 'modbus_tcp_pi_accept': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-tcp.h(48,16):
+  see previous definition of 'modbus_tcp_pi_accept'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-tcp.c(744,14): warning C4244: '=': conversion from 'SOCKET' to 'int', possible loss of data
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-tcp.c(857,11): warning C4273: 'modbus_new_tcp': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-tcp.h(42,22):
+  see previous definition of 'modbus_new_tcp'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-tcp.c(921,11): warning C4273: 'modbus_new_tcp_pi': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus-tcp.h(46,22):
+  see previous definition of 'modbus_new_tcp_pi'
+  
+  modbus.c
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.c(44,13): warning C4273: 'modbus_strerror': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(218,24):
+  see previous definition of 'modbus_strerror'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.c(111,5): warning C4273: 'modbus_flush': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(215,16):
+  see previous definition of 'modbus_flush'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.c(223,5): warning C4273: 'modbus_send_raw_request': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(258,1):
+  see previous definition of 'modbus_send_raw_request'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.c(525,5): warning C4273: 'modbus_receive': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(260,16):
+  see previous definition of 'modbus_receive'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.c(543,5): warning C4273: 'modbus_receive_confirmation': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(262,16):
+  see previous definition of 'modbus_receive_confirmation'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.c(777,5): warning C4273: 'modbus_reply': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(264,16):
+  see previous definition of 'modbus_reply'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.c(1027,21): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.c(1140,5): warning C4273: 'modbus_reply_exception': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(269,1):
+  see previous definition of 'modbus_reply_exception'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.c(1218,5): warning C4273: 'modbus_read_bits': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(220,16):
+  see previous definition of 'modbus_read_bits'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.c(1247,5): warning C4273: 'modbus_read_input_bits': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(221,16):
+  see previous definition of 'modbus_read_input_bits'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.c(1322,5): warning C4273: 'modbus_read_registers': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(222,16):
+  see previous definition of 'modbus_read_registers'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.c(1347,5): warning C4273: 'modbus_read_input_registers': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(224,1):
+  see previous definition of 'modbus_read_input_registers'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.c(1401,5): warning C4273: 'modbus_write_bit': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(225,16):
+  see previous definition of 'modbus_write_bit'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.c(1412,5): warning C4273: 'modbus_write_register': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(226,16):
+  see previous definition of 'modbus_write_register'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.c(1423,5): warning C4273: 'modbus_write_bits': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(227,16):
+  see previous definition of 'modbus_write_bits'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.c(1486,5): warning C4273: 'modbus_write_registers': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(229,1):
+  see previous definition of 'modbus_write_registers'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.c(1534,5): warning C4273: 'modbus_mask_write_register': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(231,1):
+  see previous definition of 'modbus_mask_write_register'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.c(1574,5): warning C4273: 'modbus_write_and_read_registers': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(232,16):
+  see previous definition of 'modbus_write_and_read_registers'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.c(1655,5): warning C4273: 'modbus_report_slave_id': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(239,16):
+  see previous definition of 'modbus_report_slave_id'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.c(1719,5): warning C4273: 'modbus_set_slave': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(187,16):
+  see previous definition of 'modbus_set_slave'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.c(1729,5): warning C4273: 'modbus_get_slave': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(188,16):
+  see previous definition of 'modbus_get_slave'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.c(1739,5): warning C4273: 'modbus_set_error_recovery': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(189,16):
+  see previous definition of 'modbus_set_error_recovery'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.c(1752,5): warning C4273: 'modbus_set_socket': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(191,16):
+  see previous definition of 'modbus_set_socket'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.c(1763,5): warning C4273: 'modbus_get_socket': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(192,16):
+  see previous definition of 'modbus_get_socket'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.c(1774,5): warning C4273: 'modbus_get_response_timeout': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(195,1):
+  see previous definition of 'modbus_get_response_timeout'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.c(1786,5): warning C4273: 'modbus_set_response_timeout': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(197,1):
+  see previous definition of 'modbus_set_response_timeout'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.c(1799,5): warning C4273: 'modbus_get_byte_timeout': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(200,1):
+  see previous definition of 'modbus_get_byte_timeout'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.c(1811,5): warning C4273: 'modbus_set_byte_timeout': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(201,16):
+  see previous definition of 'modbus_set_byte_timeout'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.c(1825,5): warning C4273: 'modbus_get_indication_timeout': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(204,1):
+  see previous definition of 'modbus_get_indication_timeout'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.c(1837,5): warning C4273: 'modbus_set_indication_timeout': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(206,1):
+  see previous definition of 'modbus_set_indication_timeout'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.c(1850,5): warning C4273: 'modbus_get_header_length': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(208,16):
+  see previous definition of 'modbus_get_header_length'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.c(1860,5): warning C4273: 'modbus_enable_quirks': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(270,16):
+  see previous definition of 'modbus_enable_quirks'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.c(1872,5): warning C4273: 'modbus_disable_quirks': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(271,16):
+  see previous definition of 'modbus_disable_quirks'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.c(1884,5): warning C4273: 'modbus_connect': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(210,16):
+  see previous definition of 'modbus_connect'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.c(1894,6): warning C4273: 'modbus_close': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(211,17):
+  see previous definition of 'modbus_close'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.c(1902,6): warning C4273: 'modbus_free': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(213,17):
+  see previous definition of 'modbus_free'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.c(1910,5): warning C4273: 'modbus_set_debug': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(216,16):
+  see previous definition of 'modbus_set_debug'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.c(1927,19): warning C4273: 'modbus_mapping_new_start_address': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(242,1):
+  see previous definition of 'modbus_mapping_new_start_address'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.c(2010,19): warning C4273: 'modbus_mapping_new': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(251,30):
+  see previous definition of 'modbus_mapping_new'
+  
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.c(2020,6): warning C4273: 'modbus_mapping_free': inconsistent dll linkage
+  C:\Users\ElwinHammer\tunnelchallenge\modbus-test\libmodbus\modbus.h(255,17):
+  see previous definition of 'modbus_mapping_free'
+  
+  Generating Code...
+  modbus-test.cpp
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\modbus-test.cpp(93,43): warning C4838: conversion from 'int' to 'uint16_t' requires a narrowing conversion
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\modbus-test.cpp(93,58): warning C4838: conversion from 'int' to 'uint16_t' requires a narrowing conversion
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\modbus-test.cpp(93,75): warning C4838: conversion from 'int' to 'uint16_t' requires a narrowing conversion
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\modbus-test.cpp(93,89): warning C4838: conversion from 'int' to 'uint16_t' requires a narrowing conversion
+C:\Users\ElwinHammer\tunnelchallenge\modbus-test\modbus-test.cpp(163,24): warning C4244: 'initializing': conversion from 'time_t' to 'int', possible loss of data
+     Creating library C:\Users\ElwinHammer\tunnelchallenge\x64\Debug\modbus-test.lib and object C:\Users\ElwinHammer\tunnelchallenge\x64\Debug\modbus-test.exp
+LINK : warning LNK4217: symbol 'modbus_free' defined in 'modbus.obj' is imported by 'modbus-rtu.obj' in function 'modbus_new_rtu'
+LINK : warning LNK4217: symbol 'modbus_free' defined in 'modbus.obj' is imported by 'modbus-tcp.obj' in function '_modbus_tcp_pi_connect'
+LINK : warning LNK4217: symbol 'modbus_free' defined in 'modbus.obj' is imported by 'modbus-test.obj' in function '"public: static unsigned __int64 __cdecl std::_Narrow_char_traits<char,int>::length(char const * const)" (?length@?$_Narrow_char_traits@DH@std@@SA_KQEBD@Z)'
+LINK : warning LNK4217: symbol 'modbus_set_bits_from_bytes' defined in 'modbus-data.obj' is imported by 'modbus.obj' in function 'modbus_reply'
+LINK : warning LNK4217: symbol 'modbus_connect' defined in 'modbus.obj' is imported by 'modbus-test.obj' in function 'main'
+LINK : warning LNK4217: symbol 'modbus_close' defined in 'modbus.obj' is imported by 'modbus-test.obj' in function '"int __cdecl retrieveData(unsigned short * const,int,struct _modbus *)" (?retrieveData@@YAHQEAGHPEAU_modbus@@@Z)'
+LINK : warning LNK4217: symbol 'modbus_strerror' defined in 'modbus.obj' is imported by 'modbus-test.obj' in function '"int __cdecl retrieveData(unsigned short * const,int,struct _modbus *)" (?retrieveData@@YAHQEAGHPEAU_modbus@@@Z)'
+LINK : warning LNK4217: symbol 'modbus_read_registers' defined in 'modbus.obj' is imported by 'modbus-test.obj' in function '"int __cdecl retrieveData(unsigned short * const,int,struct _modbus *)" (?retrieveData@@YAHQEAGHPEAU_modbus@@@Z)'
+LINK : warning LNK4217: symbol 'modbus_write_registers' defined in 'modbus.obj' is imported by 'modbus-test.obj' in function '"int __cdecl sendData(unsigned short * const,int,struct _modbus *)" (?sendData@@YAHQEAGHPEAU_modbus@@@Z)'
+LINK : warning LNK4217: symbol 'modbus_new_tcp' defined in 'modbus-tcp.obj' is imported by 'modbus-test.obj' in function 'main'
+  modbus-test.vcxproj -> C:\Users\ElwinHammer\tunnelchallenge\x64\Debug\modbus-test.exe
