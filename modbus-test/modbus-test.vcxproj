@@ -136,6 +136,7 @@
     <ClCompile Include="libmodbus\modbus-rtu.c" />
     <ClCompile Include="libmodbus\modbus-tcp.c" />
     <ClCompile Include="libmodbus\modbus.c" />
+    <ClCompile Include="modbus-linux.c" />
     <ClCompile Include="modbus-test.cpp" />
   </ItemGroup>
   <ItemGroup>

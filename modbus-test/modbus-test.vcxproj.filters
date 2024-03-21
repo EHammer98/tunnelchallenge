@@ -30,6 +30,9 @@
     <ClCompile Include="libmodbus\modbus-tcp.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="modbus-linux.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="libmodbus\modbus-tcp.h">
