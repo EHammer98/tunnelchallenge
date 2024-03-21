@@ -21,6 +21,7 @@ int calcPower(int currentLevel, int maxKW);
 int calcCapicity(int level);
 void setLevel(int level, int lampID);
 void toggleLamp(int state, int lampID);
+void updateLamps(int newLevel[], int newAuto[], int ids[]);
 
 // Lamp ID's
 int lampIDs[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -90,8 +91,7 @@ int main() {
             // Calculating the capacity
             capaciteit[i] = calcCapicity(level[i]);
            // std::cout << "Brand uren zone: " << (i + 1) << " Minuten: " << branduren[i] << " power: " << energieverbr[i] << " capaciteit: " << capaciteit[i]  << std::endl;
-        }
-        
+        }    
 
         if (prevActMinutes != activeMinutes) {
             prevActMinutes = activeMinutes;
@@ -122,6 +122,11 @@ int main() {
                 errorHandling(lampIDs);
             }
         }
+
+        // Check the light settings & update lamps
+        updateLamps(level, setauto, lampIDs);
+
+        //For loop needed for setting the level array correct based on the setauto
     }
 
 
@@ -130,6 +135,53 @@ int main() {
     modbus_free(ctx);
 
     return 0;
+}
+
+void updateLamps(int newLevel[], int newAuto[], int ids[]) {
+    for (int i = 0; i < 5; ++i) {
+        if (newAuto[i] == 1) {
+            if (newLevel[i] > 0) {
+                setLevel(newLevel[i], ids[i]);
+                toggleLamp(1, ids[i]);
+            }
+            else {
+                setLevel(newLevel[i], ids[i]);
+                toggleLamp(0, ids[i]);
+            }
+        }
+        else {
+            // Default program (setlevel needs to be corrected to the right level)
+            // Zone 1
+            toggleLamp(1, ids[0]);
+            toggleLamp(1, ids[1]);
+            setLevel(100, ids[0]); 
+            setLevel(100, ids[1]);
+
+            // Zone 2
+            toggleLamp(1, ids[2]);
+            toggleLamp(1, ids[3]);
+            setLevel(100, ids[2]);
+            setLevel(100, ids[3]);
+
+            // Zone 3
+            toggleLamp(1, ids[4]);
+            toggleLamp(1, ids[5]);
+            setLevel(100, ids[4]);
+            setLevel(100, ids[5]);
+
+            // Zone 4
+            toggleLamp(1, ids[6]);
+            toggleLamp(1, ids[7]);
+            setLevel(100, ids[6]);
+            setLevel(100, ids[7]);
+
+            // Zone 5
+            toggleLamp(1, ids[8]);
+            toggleLamp(1, ids[9]);
+            setLevel(100, ids[8]);
+            setLevel(100, ids[9]);
+        }
+    }
 }
 
 int sendData(uint16_t data[], int address, modbus_t* connection) {
