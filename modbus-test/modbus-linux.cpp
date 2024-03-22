@@ -15,415 +15,366 @@ using namespace std::chrono_literals;
 // compile using: g++ modbus-linux.cpp HueController.cpp `pkg-config --cflags --libs libmodbus` -lcurl
 
 // Function prototypes
-int sendData(uint16_t data[], int address, modbus_t *connection);
-int retrieveData(uint16_t data[], int address, modbus_t *connection);
-int getRunningHours(int address, modbus_t *connection);
-int calcTime(time_t start);
-int calcRunningHours(int currentRunMinutes);
-void errorHandling(int lampIDs[]);
-int calcPower(int currentLevel, int maxKW);
-int calcCapicity(int level);
-void setLevel(int level, int lampID);
-void toggleLamp(int state, int lampID);
-void updateLamps(int newLevel[], int newAuto[], int ids[], int autoLevel[]);
+uint16_t sendData(uint16_t data[], uint16_t address, modbus_t *connection);
+uint16_t retrieveData(uint16_t data[], uint16_t address, modbus_t *connection);
+uint16_t getRunningHours(uint16_t address, modbus_t *connection);
+uint16_t calcTime(time_t start);
+uint16_t calcRunningHours(uint16_t currentRunMinutes);
+void errorHandling(uint16_t lampIDs[]);
+uint16_t calcPower(uint16_t currentLevel, uint16_t maxKW);
+uint16_t calcCapicity(uint16_t level);
+void setLevel(uint16_t level, uint16_t lampID);
+void toggleLamp(uint16_t state, uint16_t lampID);
+void updateLamps(uint16_t newLevel[], uint16_t newAuto[], uint16_t ids[], uint16_t autoLevel[]);
 
 // Lamp ID's
-int lampIDs[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+uint16_t lampIDs[10] = {7, 8, 9, 10, 11, 11, 11, 11, 11, 11};
+
+HueController hueController("192.168.2.100");
 
 int main()
 {
 
     // HueController test
 
-    HueController hueController("192.168.2.100");
+    // for (uint16_t i = 7; i < 13; i++)
+    // {
+    //     hueController.toggleLamp(true, i);
+    // }
 
-    for (int i = 7; i < 13; i++)
-    {
-        hueController.toggleLamp(true, i);
-    }
+    // std::this_thread::sleep_for(1000ms);
 
-    std::this_thread::sleep_for(1000ms);
+    // for (uint16_t i = 7; i < 13; i++)
+    // {
+    //     hueController.toggleLamp(false, i);
+    // }
 
-    for (int i = 7; i < 13; i++)
-    {
-        hueController.toggleLamp(false, i);
-    }
+    // std::this_thread::sleep_for(1000ms);
+    // hueController.toggleLamp(true, 7);
 
-    std::this_thread::sleep_for(1000ms);
-    hueController.toggleLamp(true, 7);
+    // for (uint16_t i = 1; i < 255; i += 5)
+    // {
+    //     hueController.setLevel(i, 7);
+    //     std::this_thread::sleep_for(100ms);
+    // }
 
-    for (int i = 1; i < 255; i += 5)
-    {
-        hueController.setLevel(i, 7);
-        std::this_thread::sleep_for(100ms);
-    }
+    // for (uint16_t i = 255; i > 0; i -= 5)
+    // {
+    //     hueController.setLevel(i, 7);
+    //     std::this_thread::sleep_for(100ms);
+    // }
 
-    for (int i = 255; i > 0; i -= 5)
-    {
-        hueController.setLevel(i, 7);
-        std::this_thread::sleep_for(100ms);
-    }
+    // for (uint16_t i = 7; i < 13; i++)
+    // {
+    //     hueController.toggleLamp(false, i);
+    // }
 
-    for (int i = 7; i < 13; i++)
-    {
-        hueController.toggleLamp(false, i);
-    }
+    const std::string modbusIP = "192.168.2.102";
 
     // Setup connection
     modbus_t *ctx;
-    ctx = modbus_new_tcp("192.168.56.1", 502);
+    ctx = modbus_new_tcp(modbusIP.c_str(), 502);
     if (ctx == NULL)
     {
-        fprintf(stderr, "Failed to create Modbus context: %s\n", modbus_strerror(errno));
-        modbus_t *ctx;
-        ctx = modbus_new_tcp("127.0.0.1", 502);
-        if (ctx == NULL)
-        {
-            std::cerr << "Failed to create Modbus context: " << modbus_strerror(errno) << std::endl;
-            errorHandling(lampIDs);
-            return -1;
-        }
+        std::cerr << "Failed to create Modbus context: " << modbus_strerror(errno) << std::endl;
+        errorHandling(lampIDs);
+        return -1;
+    }
 
-        if (modbus_connect(ctx) == -1)
-        {
-            std::cerr << "Connection failed: " << modbus_strerror(errno) << std::endl;
-            modbus_free(ctx);
-            errorHandling(lampIDs);
-            return -1;
-        }
-
-        // Start time in seconds
-        time_t startTime = time(NULL);
-
-        // system time
-        int activeMinutes = 0;
-        int prevActMinutes = 0;
-
-        int maxW = 18; // W per zone
-
-        // System write variables per zone
-        int setstand[5] = {0, 0, 0, 0, 0};
-        int setauto[5] = {0, 0, 0, 0, 0};
-
-        // System read variables per zone
-        int level[5] = {1, 0, 0, 0, 0};
-        int autoLevel[5] = {100, 100, 100, 100, 100};
-        int capaciteit[5] = {0, 0, 0, 0, 0};
-        int energieverbr[5] = {0, 0, 0, 0, 0};
-        int branduren[5] = {0, 0, 0, 0, 0};
-
-        // Start addresses for Tx & Rx
-        int addressRx[5] = {3000, 3006, 3012, 3018, 3024};
-        int addressTx[5] = {3002, 3008, 3014, 3020, 3026};
-
-        // Get current running hours in minutes from the server
-        for (int i = 0; i < 5; ++i)
-        {
-            branduren[i] = getRunningHours((addressTx[i] + 3), ctx);
-            // std::cout << "Brand uren zone: " << (i + 1) << " Minuten: " << branduren[i] << " Address: " << (addressTx[i] + 3) << std::endl;
-        }
-
-        for (;;)
-        {
-            int activeMinutes = calcTime(startTime);
-            // std::cout << "Active minutes: " << activeMinutes << std::endl;
-
-            // Keep track of running hours (in minutes)
-            for (int i = 0; i < 5; ++i)
-            {
-                if (level[i] != 0)
-                {
-                    // Light is on, time tracking needed
-                    if (prevActMinutes != activeMinutes)
-                    {
-                        branduren[i] = calcRunningHours(branduren[i]);
-                    }
-
-                    // Light is on, power consumption feedback is needed and convert it to kW
-                    energieverbr[i] = (calcPower(level[i], maxW) / 1000);
-                }
-                // Calculating the capacity
-                capaciteit[i] = calcCapicity(level[i]);
-                // std::cout << "Brand uren zone: " << (i + 1) << " Minuten: " << branduren[i] << " power: " << energieverbr[i] << " capaciteit: " << capaciteit[i]  << std::endl;
-            }
-
-            if (prevActMinutes != activeMinutes)
-            {
-                prevActMinutes = activeMinutes;
-            }
-
-            // Sending & retrieveing data to and from the server
-            for (int i = 0; i < 5; ++i)
-            {
-                // Prepare data to send
-                uint16_t dataTx[4] = {level[i], capaciteit[i], energieverbr[i], branduren[i]};
-
-                // Send data
-                if (sendData(dataTx, addressTx[i], ctx) == 0)
-                {
-                    std::cout << "Data sent successfully zone: " << (i + 1) << std::endl;
-                }
-                else
-                {
-                    errorHandling(lampIDs);
-                }
-
-                // Prepare data to be retrieved
-                uint16_t dataRx[2];
-
-                if (retrieveData(dataRx, addressRx[i], ctx) == 0)
-                {
-                    std::cout << "Data read from Modbus registers zone: " << (i + 1) << std::endl;
-                    level[i] = dataRx[0]; // setstand[i] = dataRx[0];
-                    setauto[i] = dataRx[1];
-                }
-                else
-                {
-                    errorHandling(lampIDs);
-                }
-            }
-
-            // Check the light settings & update lamps
-            updateLamps(level, setauto, lampIDs, autoLevel);
-
-            // For loop needed for setting the level array correct based on the setauto
-            for (int i = 0; i < 5; ++i)
-            {
-                if (setauto[i] == 0)
-                {
-                    level[i] = autoLevel[i];
-                }
-            }
-        }
-
-        // Close connection
-        modbus_close(ctx);
+    if (modbus_connect(ctx) == -1)
+    {
+        std::cerr << "Connection failed: " << modbus_strerror(errno) << std::endl;
         modbus_free(ctx);
-
-        return 0;
+        errorHandling(lampIDs);
+        return -1;
     }
 
-    void updateLamps(int newLevel[], int newAuto[], int ids[], int defLevel[])
+    // Start time in seconds
+    time_t startTime = time(NULL);
+
+    // system time
+    uint16_t activeMinutes = 0;
+    uint16_t prevActMinutes = 0;
+
+    uint16_t maxW = 18; // W per zone
+
+    // System write variables per zone
+    uint16_t setstand[5] = {0, 0, 0, 0, 0};
+    uint16_t setauto[5] = {0, 0, 0, 0, 0};
+
+    // System read variables per zone
+    uint16_t level[5] = {1, 0, 0, 0, 0};
+    uint16_t autoLevel[5] = {50, 50, 50, 50, 50};
+    uint16_t capaciteit[5] = {0, 0, 0, 0, 0};
+    uint16_t energieverbr[5] = {0, 0, 0, 0, 0};
+    uint16_t branduren[5] = {0, 0, 0, 0, 0};
+
+    // Start addresses for Tx & Rx
+    uint16_t addressRx[5] = {3000, 3006, 3012, 3018, 3024};
+    uint16_t addressTx[5] = {3002, 3008, 3014, 3020, 3026};
+
+    // Get current running hours in minutes from the server
+    for (uint16_t i = 0; i < 5; ++i)
     {
-        for (int i = 0; i < 5; ++i)
+        branduren[i] = getRunningHours((addressTx[i] + 3), ctx);
+        std::cout << "Brand uren zone: " << (i + 1) << " Minuten: " << branduren[i] << " Address: " << (addressTx[i] + 3) << std::endl;
+    }
+
+    std::cout << "TEST " << std::endl;
+
+    while (1)
+    {
+        uint16_t activeMinutes = calcTime(startTime);
+        std::cout << "Active minutes: " << activeMinutes << std::endl;
+
+        // Keep track of running hours (in minutes)
+        for (uint16_t i = 0; i < 5; ++i)
         {
-            if (newAuto[i] == 1)
+            if (level[i] != 0)
             {
-                if (newLevel[i] > 0)
+                // Light is on, time tracking needed
+                if (prevActMinutes != activeMinutes)
                 {
-                    setLevel(newLevel[i], ids[i]);
-                    toggleLamp(1, ids[i]);
+                    branduren[i] = calcRunningHours(branduren[i]);
                 }
-                else
-                {
-                    setLevel(newLevel[i], ids[i]);
-                    toggleLamp(0, ids[i]);
-                }
+
+                // Light is on, power consumption feedback is needed and convert it to kW
+                energieverbr[i] = (calcPower(level[i], maxW) / 1000);
+            }
+
+            // Calculating the capacity
+            capaciteit[i] = calcCapicity(level[i]);
+            // std::cout << "Brand uren zone: " << (i + 1) << " Minuten: " << branduren[i] << " power: " << energieverbr[i] << " capaciteit: " << capaciteit[i]  << std::endl;
+        }
+
+        if (prevActMinutes != activeMinutes)
+        {
+            prevActMinutes = activeMinutes;
+        }
+
+        // Sending & retrieveing data to and from the server
+        for (uint16_t i = 0; i < 5; ++i)
+        {
+            // Prepare data to send
+            uint16_t dataTx[4] = {level[i], capaciteit[i], energieverbr[i], branduren[i]};
+
+            // Send data
+            if (sendData(dataTx, addressTx[i], ctx) == 0)
+            {
+                std::cout << "Data sent successfully zone: " << (i + 1) << std::endl;
             }
             else
             {
-                // Default program (setlevel needs to be corrected to the right level)
-                // Zone 1
-                toggleLamp(1, ids[0]);
-                toggleLamp(1, ids[1]);
-                setLevel(defLevel[i], ids[0]);
-                setLevel(defLevel[i], ids[1]);
-
-                // Zone 2
-                toggleLamp(1, ids[2]);
-                toggleLamp(1, ids[3]);
-                setLevel(defLevel[i], ids[2]);
-                setLevel(defLevel[i], ids[3]);
-
-                // Zone 3
-                toggleLamp(1, ids[4]);
-                toggleLamp(1, ids[5]);
-                setLevel(defLevel[i], ids[4]);
-                setLevel(defLevel[i], ids[5]);
-
-                // Zone 4
-                toggleLamp(1, ids[6]);
-                toggleLamp(1, ids[7]);
-                setLevel(defLevel[i], ids[6]);
-                setLevel(defLevel[i], ids[7]);
-
-                // Zone 5
-                toggleLamp(1, ids[8]);
-                toggleLamp(1, ids[9]);
-                setLevel(defLevel[i], ids[8]);
-                setLevel(defLevel[i], ids[9]);
+                errorHandling(lampIDs);
             }
-        }
-    }
 
-    void updateLamps(int newLevel[], int newAuto[], int ids[], int defLevel[])
-    {
-        for (int i = 0; i < 5; ++i)
-        {
-            if (newAuto[i] == 1)
+            // Prepare data to be retrieved
+            uint16_t dataRx[2];
+
+            if (retrieveData(dataRx, addressRx[i], ctx) == 0)
             {
-                if (newLevel[i] > 0)
-                {
-                    setLevel(newLevel[i], ids[i]);
-                    toggleLamp(1, ids[i]);
-                }
-                else
-                {
-                    setLevel(newLevel[i], ids[i]);
-                    toggleLamp(0, ids[i]);
-                }
+                std::cout << "Data read from Modbus registers zone: " << (i + 1) << std::endl;
+                level[i] = dataRx[0]; // setstand[i] = dataRx[0];
+                setauto[i] = dataRx[1];
             }
             else
             {
-                // Default program (setlevel needs to be corrected to the right level)
-                // Zone 1
-                toggleLamp(1, ids[0]);
-                toggleLamp(1, ids[1]);
-                setLevel(defLevel[i], ids[0]);
-                setLevel(defLevel[i], ids[1]);
+                errorHandling(lampIDs);
+            }
+        }
 
-                // Zone 2
-                toggleLamp(1, ids[2]);
-                toggleLamp(1, ids[3]);
-                setLevel(defLevel[i], ids[2]);
-                setLevel(defLevel[i], ids[3]);
+        // Check the light settings & update lamps
+        updateLamps(level, setauto, lampIDs, autoLevel);
 
-                // Zone 3
-                toggleLamp(1, ids[4]);
-                toggleLamp(1, ids[5]);
-                setLevel(defLevel[i], ids[4]);
-                setLevel(defLevel[i], ids[5]);
-
-                // Zone 4
-                toggleLamp(1, ids[6]);
-                toggleLamp(1, ids[7]);
-                setLevel(defLevel[i], ids[6]);
-                setLevel(defLevel[i], ids[7]);
-
-                // Zone 5
-                toggleLamp(1, ids[8]);
-                toggleLamp(1, ids[9]);
-                setLevel(defLevel[i], ids[8]);
-                setLevel(defLevel[i], ids[9]);
+        // For loop needed for setting the level array correct based on the setauto
+        for (uint16_t i = 0; i < 5; ++i)
+        {
+            if (setauto[i] == 0)
+            {
+                level[i] = autoLevel[i];
             }
         }
     }
 
-    int sendData(uint16_t data[], int address, modbus_t *connection)
-    {
-        int rc;
-        // Write data to Modbus server
-        rc = modbus_write_registers(connection, address, 4, data); // Corrected the number of registers
-        if (rc == -1)
-        {
-            std::cerr << "Write error: " << modbus_strerror(errno) << std::endl;
-            modbus_close(connection);
-            modbus_free(connection);
-            errorHandling(lampIDs);
-            return -1;
-        }
-        return 0;
-    }
+    // Close connection
+    modbus_close(ctx);
+    modbus_free(ctx);
 
-    int retrieveData(uint16_t data[], int address, modbus_t *connection)
-    { // Corrected the parameter type
-        int rc;
-        /* Read 2 registers from the address */
-        rc = modbus_read_registers(connection, address, 2, data); // Corrected passing the address of the pointer
-        if (rc == -1)
-        {
-            std::cerr << "Read error: " << modbus_strerror(errno) << std::endl;
-            modbus_close(connection);
-            modbus_free(connection);
-            errorHandling(lampIDs);
-            return -1;
-        }
-        return 0;
-    }
+    return 0;
+}
 
-    // Function for getting the last running hours from the server
-    int getRunningHours(int address, modbus_t *connection)
+void updateLamps(uint16_t newLevel[], uint16_t newAuto[], uint16_t ids[], uint16_t defLevel[])
+{
+    for (uint16_t i = 0; i < 5; ++i)
     {
-        int runningMinutes = 0;
-        uint16_t dataRx[2];
-        if (retrieveData(dataRx, address, connection) == 0)
+        if (newAuto[i] == 1)
         {
-            std::cout << "Data read from Modbus registers:" << std::endl;
-            for (int i = 0; i < 2; ++i)
-            {                                                                    // Changed the loop limit to 2
-                std::cout << "Register " << i << ": " << dataRx[i] << std::endl; // Corrected accessing the array directly
+            if (newLevel[i] > 0)
+            {
+                setLevel(newLevel[i], ids[i]);
+                toggleLamp(1, ids[i]);
+            }
+            else
+            {
+                setLevel(newLevel[i], ids[i]);
+                toggleLamp(0, ids[i]);
             }
         }
         else
         {
-            errorHandling(lampIDs);
-        }
-        return runningMinutes = dataRx[0];
-    }
+            // Default program (setlevel needs to be corrected to the right level)
+            // Zone 1
+            toggleLamp(1, ids[0]);
+            toggleLamp(1, ids[1]);
+            setLevel(defLevel[i], ids[0]);
+            setLevel(defLevel[i], ids[1]);
 
-    // Calculate the time
-    int calcTime(time_t startTime)
-    {
-        // Calculate elapsed minutes
-        time_t currentTime = time(NULL);
-        int elapsedMinutes = (currentTime - startTime) / 60;
-        // Sleep for 1 minute (60 seconds)
-        // Note: This is not precise, but it's a simple way to introduce a delay
-        // without external libraries
-        for (int i = 0; i < 60; ++i)
-        {
-            // Introduce a small delay
-            for (volatile int j = 0; j < 1000000; ++j)
-            {
-            }
-        }
+            // Zone 2
+            toggleLamp(1, ids[2]);
+            toggleLamp(1, ids[3]);
+            setLevel(defLevel[i], ids[2]);
+            setLevel(defLevel[i], ids[3]);
 
-        return elapsedMinutes;
-    }
+            // Zone 3
+            toggleLamp(1, ids[4]);
+            toggleLamp(1, ids[5]);
+            setLevel(defLevel[i], ids[4]);
+            setLevel(defLevel[i], ids[5]);
 
-    // Calculate the current running hours (in minutes)
-    int calcRunningHours(int currentRunMinutes)
-    {
-        int newRunMinutes = currentRunMinutes + 1;
-        return newRunMinutes;
-    }
+            // Zone 4
+            toggleLamp(1, ids[6]);
+            toggleLamp(1, ids[7]);
+            setLevel(defLevel[i], ids[6]);
+            setLevel(defLevel[i], ids[7]);
 
-    // Calculate the current power consumption
-    int calcPower(int currentLevel, int maxKW)
-    {
-        int currentKW = (maxKW / 100) * currentLevel;
-        return currentKW;
-    }
-
-    // Function for calculating the current capacity
-    int calcCapicity(int level)
-    {
-        int currentCapacity = 100 - level;
-        return currentCapacity;
-    }
-
-    // Error handling
-    void errorHandling(int lampIDs[])
-    {
-        std::cerr << "FATAL ERROR" << std::endl;
-        for (int i = 0; i < 5; ++i)
-        {
-            toggleLamp(1, lampIDs[i]);
-            toggleLamp(1, lampIDs[i + 1]);
-            setLevel(100, lampIDs[i]);
-            setLevel(100, lampIDs[i + 1]);
+            // Zone 5
+            toggleLamp(1, ids[8]);
+            toggleLamp(1, ids[9]);
+            setLevel(defLevel[i], ids[8]);
+            setLevel(defLevel[i], ids[9]);
         }
     }
+}
 
-    // Set level of the light (0-100%)
-    void setLevel(int level, int lampID)
+uint16_t sendData(uint16_t data[], uint16_t address, modbus_t *connection)
+{
+    uint16_t rc;
+    // Write data to Modbus server
+    rc = modbus_write_registers(connection, address, 4, data); // Corrected the number of registers
+    if (rc == -1)
     {
-        int lampLevel = (255 / 100) * level;
-        // Rest of the code to set the lamp level
+        std::cerr << "Write error: " << modbus_strerror(errno) << std::endl;
+        modbus_close(connection);
+        modbus_free(connection);
+        errorHandling(lampIDs);
+        return -1;
     }
+    return 0;
+}
 
-    // Turn light off or on (0-1)
-    void toggleLamp(int state, int lampID)
+uint16_t retrieveData(uint16_t data[], uint16_t address, modbus_t *connection)
+{ // Corrected the parameter type
+    uint16_t rc;
+    /* Read 2 registers from the address */
+    rc = modbus_read_registers(connection, address, 2, data); // Corrected passing the address of the pointer
+    if (rc == -1)
     {
-        // Rest of the code to set the lamp level
+        std::cerr << "Read error: " << modbus_strerror(errno) << std::endl;
+        modbus_close(connection);
+        modbus_free(connection);
+        errorHandling(lampIDs);
+        return -1;
     }
+    return 0;
+}
+
+// Function for getting the last running hours from the server
+uint16_t getRunningHours(uint16_t address, modbus_t *connection)
+{
+    uint16_t runningMinutes = 0;
+    uint16_t dataRx[2];
+    if (retrieveData(dataRx, address, connection) == 0)
+    {
+        std::cout << "Data read from Modbus registers:" << std::endl;
+        for (uint16_t i = 0; i < 2; ++i)
+        {                                                                    // Changed the loop limit to 2
+            std::cout << "Register " << i << ": " << dataRx[i] << std::endl; // Corrected accessing the array directly
+        }
+    }
+    else
+    {
+        errorHandling(lampIDs);
+    }
+    return runningMinutes = dataRx[0];
+}
+
+// Calculate the time
+uint16_t calcTime(time_t startTime)
+{
+    // Calculate elapsed minutes
+    time_t currentTime = time(NULL);
+    uint16_t elapsedMinutes = (currentTime - startTime) / 60;
+    // Sleep for 1 minute (60 seconds)elapsedMinutes
+    // Note: This is not precise, but it's a simple way to introduce a delay
+    // without external libraries
+    // for (uint16_t i = 0; i < 60; ++i)
+    // {
+    //     // // Introduce a small delay
+    //     // for (volatile int j = 0; j < 1000000; ++j)
+    //     // {
+    //     // }
+    // }
+
+    return elapsedMinutes;
+}
+
+// Calculate the current running hours (in minutes)
+uint16_t calcRunningHours(uint16_t currentRunMinutes)
+{
+    uint16_t newRunMinutes = currentRunMinutes + 1;
+    return newRunMinutes;
+}
+
+// Calculate the current power consumption
+uint16_t calcPower(uint16_t currentLevel, uint16_t maxKW)
+{
+    uint16_t currentKW = (maxKW / 100) * currentLevel;
+    return currentKW;
+}
+
+// Function for calculating the current capacity
+uint16_t calcCapicity(uint16_t level)
+{
+    uint16_t currentCapacity = 100 - level;
+    return currentCapacity;
+}
+
+// Error handling
+void errorHandling(uint16_t lampIDs[])
+{
+    std::cerr << "FATAL ERROR" << std::endl;
+    for (uint16_t i = 0; i < 5; ++i)
+    {
+        toggleLamp(1, lampIDs[i]);
+        toggleLamp(1, lampIDs[i + 1]);
+        setLevel(100, lampIDs[i]);
+        setLevel(100, lampIDs[i + 1]);
+    }
+}
+
+// Set level of the light (0-100%)
+void setLevel(uint16_t level, uint16_t lampID)
+{
+    std::cout << "setLevel()" << std::endl;
+    uint16_t lampLevel = (255 / 100) * level;
+    // Rest of the code to set the lamp level
+    hueController.setLevel((int)level, (int)lampID);
+}
+
+// Turn light off or on (0-1)
+void toggleLamp(uint16_t state, uint16_t lampID)
+{
+    std::cout << "toggleLamp()" << std::endl;
+    // Rest of the code to set the lamp level
+    hueController.toggleLamp((bool)state, (int)lampID);
+}
