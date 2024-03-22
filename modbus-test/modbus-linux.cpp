@@ -1,9 +1,19 @@
 #include <stdio.h>
+#include <iostream>
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
-#include <modbus.h>
+#include "libmodbus/modbus.h"
 #include <errno.h>
+#include <chrono>
+#include <thread>
+
+ using namespace std::chrono_literals;
+
+#include "HueController.h"
+
+// compile using: g++ modbus-linux.cpp HueController.cpp `pkg-config --cflags --libs libmodbus` -lcurl
+
 
 // Function prototypes
 int sendData(uint16_t data[], int address, modbus_t* connection);
@@ -20,8 +30,44 @@ void toggleLamp(int state, int lampID);
 // Lamp ID's
 int lampIDs[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
+
 int main() {
-    // Setup connection
+
+    // HueController test
+
+    HueController hueController("192.168.2.100");
+
+    for(int i = 7; i < 13; i++){
+hueController.toggleLamp(true, i);
+}
+
+std::this_thread::sleep_for(1000ms);
+
+for(int i = 7; i < 13; i++){
+hueController.toggleLamp(false, i);
+}
+
+std::this_thread::sleep_for(1000ms);
+hueController.toggleLamp(true, 7);
+
+for(int i = 1; i < 255; i += 5){
+hueController.setLevel(i, 7);
+std::this_thread::sleep_for(100ms);
+}
+
+for(int i = 255; i > 0; i-= 5){
+hueController.setLevel(i, 7);
+std::this_thread::sleep_for(100ms);
+}
+
+for(int i = 7; i < 13; i++){
+hueController.toggleLamp(false, i);
+}
+
+
+
+
+ // Setup connection
     modbus_t* ctx;
     ctx = modbus_new_tcp("192.168.56.1", 502);
     if (ctx == NULL) {
@@ -51,10 +97,10 @@ int main() {
     int setauto[5] = { 0, 0, 0, 0, 0 };
 
     // System read variables per zone
-    int level[5] = { 1, 0, 0, 0, 0 };
-    int capaciteit[5] = { 0, 0, 0, 0, 0 };
-    int energieverbr[5] = { 0, 0, 0, 0, 0 };
-    int branduren[5] = { 0, 0, 0, 0, 0 };
+    uint16_t level[5] = { 1, 0, 0, 0, 0 };
+    uint16_t capaciteit[5] = { 0, 0, 0, 0, 0 };
+    uint16_t energieverbr[5] = { 0, 0, 0, 0, 0 };
+    uint16_t branduren[5] = { 0, 0, 0, 0, 0 };
 
     // Start addresses for Tx & Rx
     int addressRx[5] = { 3000, 3006, 3012, 3018, 3024 };
