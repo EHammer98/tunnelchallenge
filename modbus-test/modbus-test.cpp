@@ -21,7 +21,7 @@ int calcPower(int currentLevel, int maxKW);
 int calcCapicity(int level);
 void setLevel(int level, int lampID);
 void toggleLamp(int state, int lampID);
-void updateLamps(int newLevel[], int newAuto[], int ids[]);
+void updateLamps(int newLevel[], int newAuto[], int ids[], int autoLevel[]);
 
 // Lamp ID's
 int lampIDs[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -59,6 +59,7 @@ int main() {
 
     // System read variables per zone
     int level[5] = { 1, 0, 0, 0, 0 };
+    int autoLevel[5] = { 100, 100, 100, 100, 100 };
     int capaciteit[5] = { 0, 0, 0, 0, 0 };
     int energieverbr[5] = { 0, 0, 0, 0, 0 };
     int branduren[5] = { 0, 0, 0, 0, 0 };
@@ -124,9 +125,14 @@ int main() {
         }
 
         // Check the light settings & update lamps
-        updateLamps(level, setauto, lampIDs);
+        updateLamps(level, setauto, lampIDs, autoLevel);
 
         //For loop needed for setting the level array correct based on the setauto
+        for (int i = 0; i < 5; ++i) {
+            if (setauto[i] == 0) {
+                level[i] = autoLevel[i];
+            }
+        }
     }
 
 
@@ -137,7 +143,7 @@ int main() {
     return 0;
 }
 
-void updateLamps(int newLevel[], int newAuto[], int ids[]) {
+void updateLamps(int newLevel[], int newAuto[], int ids[], int defLevel[]) {
     for (int i = 0; i < 5; ++i) {
         if (newAuto[i] == 1) {
             if (newLevel[i] > 0) {
@@ -154,32 +160,32 @@ void updateLamps(int newLevel[], int newAuto[], int ids[]) {
             // Zone 1
             toggleLamp(1, ids[0]);
             toggleLamp(1, ids[1]);
-            setLevel(100, ids[0]); 
-            setLevel(100, ids[1]);
+            setLevel(defLevel[i], ids[0]);
+            setLevel(defLevel[i], ids[1]);
 
             // Zone 2
             toggleLamp(1, ids[2]);
             toggleLamp(1, ids[3]);
-            setLevel(100, ids[2]);
-            setLevel(100, ids[3]);
+            setLevel(defLevel[i], ids[2]);
+            setLevel(defLevel[i], ids[3]);
 
             // Zone 3
             toggleLamp(1, ids[4]);
             toggleLamp(1, ids[5]);
-            setLevel(100, ids[4]);
-            setLevel(100, ids[5]);
+            setLevel(defLevel[i], ids[4]);
+            setLevel(defLevel[i], ids[5]);
 
             // Zone 4
             toggleLamp(1, ids[6]);
             toggleLamp(1, ids[7]);
-            setLevel(100, ids[6]);
-            setLevel(100, ids[7]);
+            setLevel(defLevel[i], ids[6]);
+            setLevel(defLevel[i], ids[7]);
 
             // Zone 5
             toggleLamp(1, ids[8]);
             toggleLamp(1, ids[9]);
-            setLevel(100, ids[8]);
-            setLevel(100, ids[9]);
+            setLevel(defLevel[i], ids[8]);
+            setLevel(defLevel[i], ids[9]);
         }
     }
 }
