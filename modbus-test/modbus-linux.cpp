@@ -8,17 +8,16 @@
 #include <chrono>
 #include <thread>
 
- using namespace std::chrono_literals;
+using namespace std::chrono_literals;
 
 #include "HueController.h"
 
 // compile using: g++ modbus-linux.cpp HueController.cpp `pkg-config --cflags --libs libmodbus` -lcurl
 
-
 // Function prototypes
-int sendData(uint16_t data[], int address, modbus_t* connection);
-int retrieveData(uint16_t data[], int address, modbus_t* connection);
-int getRunningHours(int address, modbus_t* connection);
+int sendData(uint16_t data[], int address, modbus_t *connection);
+int retrieveData(uint16_t data[], int address, modbus_t *connection);
+int getRunningHours(int address, modbus_t *connection);
 int calcTime(time_t start);
 int calcRunningHours(int currentRunMinutes);
 void errorHandling(int lampIDs[]);
@@ -28,55 +27,59 @@ void setLevel(int level, int lampID);
 void toggleLamp(int state, int lampID);
 
 // Lamp ID's
-int lampIDs[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+int lampIDs[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-
-int main() {
+int main()
+{
 
     // HueController test
 
     HueController hueController("192.168.2.100");
 
-    for(int i = 7; i < 13; i++){
-hueController.toggleLamp(true, i);
-}
+    for (int i = 7; i < 13; i++)
+    {
+        hueController.toggleLamp(true, i);
+    }
 
-std::this_thread::sleep_for(1000ms);
+    std::this_thread::sleep_for(1000ms);
 
-for(int i = 7; i < 13; i++){
-hueController.toggleLamp(false, i);
-}
+    for (int i = 7; i < 13; i++)
+    {
+        hueController.toggleLamp(false, i);
+    }
 
-std::this_thread::sleep_for(1000ms);
-hueController.toggleLamp(true, 7);
+    std::this_thread::sleep_for(1000ms);
+    hueController.toggleLamp(true, 7);
 
-for(int i = 1; i < 255; i += 5){
-hueController.setLevel(i, 7);
-std::this_thread::sleep_for(100ms);
-}
+    for (int i = 1; i < 255; i += 5)
+    {
+        hueController.setLevel(i, 7);
+        std::this_thread::sleep_for(100ms);
+    }
 
-for(int i = 255; i > 0; i-= 5){
-hueController.setLevel(i, 7);
-std::this_thread::sleep_for(100ms);
-}
+    for (int i = 255; i > 0; i -= 5)
+    {
+        hueController.setLevel(i, 7);
+        std::this_thread::sleep_for(100ms);
+    }
 
-for(int i = 7; i < 13; i++){
-hueController.toggleLamp(false, i);
-}
+    for (int i = 7; i < 13; i++)
+    {
+        hueController.toggleLamp(false, i);
+    }
 
-
-
-
- // Setup connection
-    modbus_t* ctx;
+    // Setup connection
+    modbus_t *ctx;
     ctx = modbus_new_tcp("192.168.56.1", 502);
-    if (ctx == NULL) {
+    if (ctx == NULL)
+    {
         fprintf(stderr, "Failed to create Modbus context: %s\n", modbus_strerror(errno));
         errorHandling(lampIDs);
         return -1;
     }
 
-    if (modbus_connect(ctx) == -1) {
+    if (modbus_connect(ctx) == -1)
+    {
         fprintf(stderr, "Connection failed: %s\n", modbus_strerror(errno));
         modbus_free(ctx);
         errorHandling(lampIDs);
@@ -93,32 +96,37 @@ hueController.toggleLamp(false, i);
     int maxW = 18; // W per zone
 
     // System write variables per zone
-    int setstand[5] = { 0, 0, 0, 0, 0 };
-    int setauto[5] = { 0, 0, 0, 0, 0 };
+    int setstand[5] = {0, 0, 0, 0, 0};
+    int setauto[5] = {0, 0, 0, 0, 0};
 
     // System read variables per zone
-    uint16_t level[5] = { 1, 0, 0, 0, 0 };
-    uint16_t capaciteit[5] = { 0, 0, 0, 0, 0 };
-    uint16_t energieverbr[5] = { 0, 0, 0, 0, 0 };
-    uint16_t branduren[5] = { 0, 0, 0, 0, 0 };
+    uint16_t level[5] = {1, 0, 0, 0, 0};
+    uint16_t capaciteit[5] = {0, 0, 0, 0, 0};
+    uint16_t energieverbr[5] = {0, 0, 0, 0, 0};
+    uint16_t branduren[5] = {0, 0, 0, 0, 0};
 
     // Start addresses for Tx & Rx
-    int addressRx[5] = { 3000, 3006, 3012, 3018, 3024 };
-    int addressTx[5] = { 3002, 3008, 3014, 3020, 3026 };
+    int addressRx[5] = {3000, 3006, 3012, 3018, 3024};
+    int addressTx[5] = {3002, 3008, 3014, 3020, 3026};
 
     // Get current running hours in minutes from the server
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 5; ++i)
+    {
         branduren[i] = getRunningHours((addressTx[i] + 3), ctx);
     }
 
-    for (;;) {
+    for (;;)
+    {
         int activeMinutes = calcTime(startTime);
 
         // Keep track of running hours (in minutes)
-        for (int i = 0; i < 5; ++i) {
-            if (level[i] != 0) {
+        for (int i = 0; i < 5; ++i)
+        {
+            if (level[i] != 0)
+            {
                 // Light is on, time tracking needed
-                if (prevActMinutes != activeMinutes) {
+                if (prevActMinutes != activeMinutes)
+                {
                     branduren[i] = calcRunningHours(branduren[i]);
                 }
 
@@ -129,32 +137,38 @@ hueController.toggleLamp(false, i);
             capaciteit[i] = calcCapicity(level[i]);
         }
 
-        if (prevActMinutes != activeMinutes) {
+        if (prevActMinutes != activeMinutes)
+        {
             prevActMinutes = activeMinutes;
         }
 
-        //Sending & retrieveing data to and from the server
-        for (int i = 0; i < 5; ++i) {
+        // Sending & retrieveing data to and from the server
+        for (int i = 0; i < 5; ++i)
+        {
             // Prepare data to send
-            uint16_t dataTx[4] = { level[i], capaciteit[i], energieverbr[i], branduren[i] };
+            uint16_t dataTx[4] = {level[i], capaciteit[i], energieverbr[i], branduren[i]};
 
             // Send data
-            if (sendData(dataTx, addressTx[i], ctx) == 0) {
+            if (sendData(dataTx, addressTx[i], ctx) == 0)
+            {
                 printf("Data sent successfully zone: %d\n", (i + 1));
             }
-            else {
+            else
+            {
                 errorHandling(lampIDs);
             }
 
             // Prepare data to be retrieved
             uint16_t dataRx[2];
 
-            if (retrieveData(dataRx, addressRx[i], ctx) == 0) {
+            if (retrieveData(dataRx, addressRx[i], ctx) == 0)
+            {
                 printf("Data read from Modbus registers zone: %d\n", (i + 1));
-                level[i] = dataRx[0]; //setstand[i] = dataRx[0];
+                level[i] = dataRx[0]; // setstand[i] = dataRx[0];
                 setauto[i] = dataRx[1];
             }
-            else {
+            else
+            {
                 errorHandling(lampIDs);
             }
         }
@@ -167,11 +181,13 @@ hueController.toggleLamp(false, i);
     return 0;
 }
 
-int sendData(uint16_t data[], int address, modbus_t* connection) {
+int sendData(uint16_t data[], int address, modbus_t *connection)
+{
     int rc;
     // Write data to Modbus server
     rc = modbus_write_registers(connection, address, 4, data); // Corrected the number of registers
-    if (rc == -1) {
+    if (rc == -1)
+    {
         fprintf(stderr, "Write error: %s\n", modbus_strerror(errno));
         modbus_close(connection);
         modbus_free(connection);
@@ -181,11 +197,13 @@ int sendData(uint16_t data[], int address, modbus_t* connection) {
     return 0;
 }
 
-int retrieveData(uint16_t data[], int address, modbus_t* connection) { // Corrected the parameter type
+int retrieveData(uint16_t data[], int address, modbus_t *connection)
+{ // Corrected the parameter type
     int rc;
     /* Read 2 registers from the address */
     rc = modbus_read_registers(connection, address, 2, data); // Corrected passing the address of the pointer
-    if (rc == -1) {
+    if (rc == -1)
+    {
         fprintf(stderr, "Read error: %s\n", modbus_strerror(errno));
         modbus_close(connection);
         modbus_free(connection);
@@ -196,59 +214,72 @@ int retrieveData(uint16_t data[], int address, modbus_t* connection) { // Correc
 }
 
 // Function for getting the last running hours from the server
-int getRunningHours(int address, modbus_t* connection) {
+int getRunningHours(int address, modbus_t *connection)
+{
     int runningMinutes = 0;
     uint16_t dataRx[2];
-    if (retrieveData(dataRx, address, connection) == 0) {
+    if (retrieveData(dataRx, address, connection) == 0)
+    {
         printf("Data read from Modbus registers:\n");
-        for (int i = 0; i < 2; ++i) { // Changed the loop limit to 2
+        for (int i = 0; i < 2; ++i)
+        {                                              // Changed the loop limit to 2
             printf("Register %d: %d\n", i, dataRx[i]); // Corrected accessing the array directly
         }
     }
-    else {
+    else
+    {
         errorHandling(lampIDs);
     }
     return runningMinutes = dataRx[0];
 }
 
 // Calculate the time
-int calcTime(time_t startTime) {
+int calcTime(time_t startTime)
+{
     // Calculate elapsed minutes
     time_t currentTime = time(NULL);
     int elapsedMinutes = (int)(currentTime - startTime) / 60;
     // Sleep for 1 minute (60 seconds)
     // Note: This is not precise, but it's a simple way to introduce a delay
     // without external libraries
-    for (int i = 0; i < 60; ++i) {
+    for (int i = 0; i < 60; ++i)
+    {
         // Introduce a small delay
-        for (volatile int j = 0; j < 1000000; ++j) {}
+        for (volatile int j = 0; j < 1000000; ++j)
+        {
+        }
     }
 
     return elapsedMinutes;
 }
 
 // Calculate the current running hours (in minutes)
-int calcRunningHours(int currentRunMinutes) {
+int calcRunningHours(int currentRunMinutes)
+{
     int newRunMinutes = currentRunMinutes + 1;
     return newRunMinutes;
 }
 
 // Calculate the current power consumption
-int calcPower(int currentLevel, int maxKW) {
+int calcPower(int currentLevel, int maxKW)
+{
     int currentKW = (maxKW / 100) * currentLevel;
     return currentKW;
 }
 
 // Function for calculating the current capacity
-int calcCapicity(int level) {
+int calcCapicity(int level)
+{
     int currentCapacity = 100 - level;
     return currentCapacity;
 }
 
 // Error handling
-void errorHandling(int lampIDs[]) {
+void errorHandling(int lampIDs[])
+{
     fprintf(stderr, "FATAL ERROR\n");
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 5; ++i)
+    {
         toggleLamp(1, lampIDs[i]);
         toggleLamp(1, lampIDs[i + 1]);
         setLevel(100, lampIDs[i]);
@@ -257,12 +288,14 @@ void errorHandling(int lampIDs[]) {
 }
 
 // Set level of the light (0-100%)
-void setLevel(int level, int lampID) {
+void setLevel(int level, int lampID)
+{
     int lampLevel = (255 / 100) * level;
     // Rest of the code to set the lamp level
 }
 
 // Turn light off or on (0-1)
-void toggleLamp(int state, int lampID) {
+void toggleLamp(int state, int lampID)
+{
     // Rest of the code to set the lamp level
 }

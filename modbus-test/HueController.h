@@ -6,10 +6,10 @@
 #include <thread>
 #include <curl/curl.h>
 
-
-class HueController {
+class HueController
+{
 private:
-    CURL* _curl;
+    CURL *_curl;
     std::string _IP;
 
 public:
