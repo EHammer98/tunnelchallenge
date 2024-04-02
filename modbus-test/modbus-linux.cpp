@@ -28,7 +28,7 @@ void toggleLamp(uint16_t state, uint16_t lampID);
 void updateLamps(uint16_t newLevel[], uint16_t newAuto[], uint16_t ids[], uint16_t autoLevel[]);
 
 // Lamp ID's
-uint16_t lampIDs[10] = {7, 8, 9, 10, 11, 11, 11, 11, 11, 11};
+uint16_t lampIDs[16] = { 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22 };
 
 HueController hueController("192.168.2.100");
 
@@ -99,22 +99,23 @@ int main()
     uint16_t maxW = 18; // W per zone
 
     // System write variables per zone
-    uint16_t setstand[5] = {0, 0, 0, 0, 0};
-    uint16_t setauto[5] = {0, 0, 0, 0, 0};
+    uint16_t setstand[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+    uint16_t setauto[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 
     // System read variables per zone
-    uint16_t level[5] = {1, 0, 0, 0, 0};
-    uint16_t autoLevel[5] = {50, 50, 50, 50, 50};
-    uint16_t capaciteit[5] = {0, 0, 0, 0, 0};
-    uint16_t energieverbr[5] = {0, 0, 0, 0, 0};
-    uint16_t branduren[5] = {0, 0, 0, 0, 0};
+    uint16_t level[8] = { 1, 0, 0, 0, 1, 0, 0, 0 };
+    uint16_t autoLevel[8] = { 50, 25, 10, 25, 50, 25, 10, 25 };
+    uint16_t capaciteit[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+    uint16_t energieverbr[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+    uint16_t branduren[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 
     // Start addresses for Tx & Rx
-    uint16_t addressRx[5] = {3000, 3006, 3012, 3018, 3024};
-    uint16_t addressTx[5] = {3002, 3008, 3014, 3020, 3026};
+    uint16_t addressOverride[8] = { 2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000 };
+    uint16_t addressRx[8] = { 3000, 3006, 3012, 3018, 3024, 3030, 3036, 3042 };
+    uint16_t addressTx[8] = { 3002, 3008, 3014, 3020, 3026, 3032, 3038, 3044 };
 
     // Get current running hours in minutes from the server
-    for (uint16_t i = 0; i < 5; ++i)
+    for (uint16_t i = 0; i < 8; ++i)
     {
         branduren[i] = getRunningHours((addressTx[i] + 3), ctx);
         std::cout << "Brand uren zone: " << (i + 1) << " Minuten: " << branduren[i] << " Address: " << (addressTx[i] + 3) << std::endl;
@@ -128,7 +129,7 @@ int main()
         std::cout << "Active minutes: " << activeMinutes << std::endl;
 
         // Keep track of running hours (in minutes)
-        for (uint16_t i = 0; i < 5; ++i)
+        for (uint16_t i = 0; i < 8; ++i)
         {
             if (level[i] != 0)
             {
@@ -153,7 +154,7 @@ int main()
         }
 
         // Sending & retrieveing data to and from the server
-        for (uint16_t i = 0; i < 5; ++i)
+        for (uint16_t i = 0; i < 8; ++i)
         {
             // Prepare data to send
             uint16_t dataTx[4] = {level[i], capaciteit[i], energieverbr[i], branduren[i]};
@@ -171,14 +172,24 @@ int main()
             // Prepare data to be retrieved
             uint16_t dataRx[2];
 
-            if (retrieveData(dataRx, addressRx[i], ctx) == 0)
-            {
-                std::cout << "Data read from Modbus registers zone: " << (i + 1) << std::endl;
-                level[i] = dataRx[0]; // setstand[i] = dataRx[0];
-                setauto[i] = dataRx[1];
+            if (retrieveData(dataRx, addressOverride[i], ctx) == 0) {
+                std::cout << "Data read from Modbus registers zone Override: " << (i + 1) << std::endl;
+                level[i] = dataRx[0]; //setstand[i] = dataRx[0];
+                setauto[i] = 1;
+                // Check if the override setstand is not set (higher then 0)
+                if (dataRx[0] == 0) {
+                    std::cout << "OVERRIDE OFF" << std::endl;
+                    if (retrieveData(dataRx, addressRx[i], ctx) == 0) {
+                        std::cout << "Data read from Modbus registers zone: " << (i + 1) << std::endl;
+                        level[i] = dataRx[0]; //setstand[i] = dataRx[0];
+                        setauto[i] = dataRx[1];
+                    }
+                    else {
+                        errorHandling(lampIDs);
+                    }
+                }
             }
-            else
-            {
+            else {
                 errorHandling(lampIDs);
             }
         }
@@ -187,7 +198,7 @@ int main()
         updateLamps(level, setauto, lampIDs, autoLevel);
 
         // For loop needed for setting the level array correct based on the setauto
-        for (uint16_t i = 0; i < 5; ++i)
+        for (uint16_t i = 0; i < 8; ++i)
         {
             if (setauto[i] == 0)
             {
@@ -205,7 +216,7 @@ int main()
 
 void updateLamps(uint16_t newLevel[], uint16_t newAuto[], uint16_t ids[], uint16_t defLevel[])
 {
-    for (uint16_t i = 0; i < 5; ++i)
+    for (uint16_t i = 0; i < 8; ++i)
     {
         if (newAuto[i] == 1)
         {
@@ -252,6 +263,24 @@ void updateLamps(uint16_t newLevel[], uint16_t newAuto[], uint16_t ids[], uint16
             toggleLamp(1, ids[9]);
             setLevel(defLevel[i], ids[8]);
             setLevel(defLevel[i], ids[9]);
+
+            // Zone 6
+            toggleLamp(1, ids[10]);
+            toggleLamp(1, ids[11]);
+            setLevel(defLevel[i], ids[10]);
+            setLevel(defLevel[i], ids[11]);
+
+            // Zone 7
+            toggleLamp(1, ids[12]);
+            toggleLamp(1, ids[13]);
+            setLevel(defLevel[i], ids[12]);
+            setLevel(defLevel[i], ids[13]);
+
+            // Zone 8
+            toggleLamp(1, ids[14]);
+            toggleLamp(1, ids[15]);
+            setLevel(defLevel[i], ids[14]);
+            setLevel(defLevel[i], ids[15]);
         }
     }
 }
