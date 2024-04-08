@@ -30,6 +30,9 @@ void updateLamps(uint16_t newLevel[], uint16_t newAuto[], uint16_t ids[], uint16
 // Lamp ID's
 uint16_t lampIDs[16] = { 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22 };
 
+// Prev. level
+uint16_t prevLevel[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+
 HueController hueController("192.168.2.100");
 
 int main()
@@ -194,9 +197,6 @@ int main()
             }
         }
 
-        // Check the light settings & update lamps
-        updateLamps(level, setauto, lampIDs, autoLevel);
-
         // For loop needed for setting the level array correct based on the setauto
         for (uint16_t i = 0; i < 8; ++i)
         {
@@ -205,6 +205,9 @@ int main()
                 level[i] = autoLevel[i];
             }
         }
+
+        // Check the light settings & update lamps
+        updateLamps(level, setauto, lampIDs, autoLevel);
     }
 
     // Close connection
@@ -222,8 +225,15 @@ void updateLamps(uint16_t newLevel[], uint16_t newAuto[], uint16_t ids[], uint16
         {
             if (newLevel[i] > 0)
             {
-                setLevel(newLevel[i], ids[i]);
-                toggleLamp(1, ids[i]);
+                // Check if defLevel is equal to prevLevel
+                if (defLevel[i] != prevLevel[i])
+                {
+                    setLevel(newLevel[i], ids[i]);
+                    toggleLamp(1, ids[i]);
+
+                    // Set the previous level
+                    prevLevel[i] = defLevel[i];
+                }
             }
             else
             {
@@ -233,54 +243,61 @@ void updateLamps(uint16_t newLevel[], uint16_t newAuto[], uint16_t ids[], uint16
         }
         else
         {
-            // Default program (setlevel needs to be corrected to the right level)
-            // Zone 1
-            toggleLamp(1, ids[0]);
-            toggleLamp(1, ids[1]);
-            setLevel(defLevel[i], ids[0]);
-            setLevel(defLevel[i], ids[1]);
+            // Check if defLevel is equal to prevLevel
+            if (defLevel[i] != prevLevel[i])
+            {
+                // Default program (setlevel needs to be corrected to the right level)
+                // Zone 1
+                toggleLamp(1, ids[0]);
+                toggleLamp(1, ids[1]);
+                setLevel(defLevel[i], ids[0]);
+                setLevel(defLevel[i], ids[1]);
 
-            // Zone 2
-            toggleLamp(1, ids[2]);
-            toggleLamp(1, ids[3]);
-            setLevel(defLevel[i], ids[2]);
-            setLevel(defLevel[i], ids[3]);
+                // Zone 2
+                toggleLamp(1, ids[2]);
+                toggleLamp(1, ids[3]);
+                setLevel(defLevel[i], ids[2]);
+                setLevel(defLevel[i], ids[3]);
 
-            // Zone 3
-            toggleLamp(1, ids[4]);
-            toggleLamp(1, ids[5]);
-            setLevel(defLevel[i], ids[4]);
-            setLevel(defLevel[i], ids[5]);
+                // Zone 3
+                toggleLamp(1, ids[4]);
+                toggleLamp(1, ids[5]);
+                setLevel(defLevel[i], ids[4]);
+                setLevel(defLevel[i], ids[5]);
 
-            // Zone 4
-            toggleLamp(1, ids[6]);
-            toggleLamp(1, ids[7]);
-            setLevel(defLevel[i], ids[6]);
-            setLevel(defLevel[i], ids[7]);
+                // Zone 4
+                toggleLamp(1, ids[6]);
+                toggleLamp(1, ids[7]);
+                setLevel(defLevel[i], ids[6]);
+                setLevel(defLevel[i], ids[7]);
 
-            // Zone 5
-            toggleLamp(1, ids[8]);
-            toggleLamp(1, ids[9]);
-            setLevel(defLevel[i], ids[8]);
-            setLevel(defLevel[i], ids[9]);
+                // Zone 5
+                toggleLamp(1, ids[8]);
+                toggleLamp(1, ids[9]);
+                setLevel(defLevel[i], ids[8]);
+                setLevel(defLevel[i], ids[9]);
 
-            // Zone 6
-            toggleLamp(1, ids[10]);
-            toggleLamp(1, ids[11]);
-            setLevel(defLevel[i], ids[10]);
-            setLevel(defLevel[i], ids[11]);
+                // Zone 6
+                toggleLamp(1, ids[10]);
+                toggleLamp(1, ids[11]);
+                setLevel(defLevel[i], ids[10]);
+                setLevel(defLevel[i], ids[11]);
 
-            // Zone 7
-            toggleLamp(1, ids[12]);
-            toggleLamp(1, ids[13]);
-            setLevel(defLevel[i], ids[12]);
-            setLevel(defLevel[i], ids[13]);
+                // Zone 7
+                toggleLamp(1, ids[12]);
+                toggleLamp(1, ids[13]);
+                setLevel(defLevel[i], ids[12]);
+                setLevel(defLevel[i], ids[13]);
 
-            // Zone 8
-            toggleLamp(1, ids[14]);
-            toggleLamp(1, ids[15]);
-            setLevel(defLevel[i], ids[14]);
-            setLevel(defLevel[i], ids[15]);
+                // Zone 8
+                toggleLamp(1, ids[14]);
+                toggleLamp(1, ids[15]);
+                setLevel(defLevel[i], ids[14]);
+                setLevel(defLevel[i], ids[15]);
+
+                // Set the previous level
+                prevLevel[i] = defLevel[i];
+            }
         }
     }
 }
