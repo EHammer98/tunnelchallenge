@@ -34,6 +34,7 @@ uint16_t lampIDs[16] = { 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21
 uint16_t prevLevel[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 
 HueController hueController("192.168.2.100");
+const std::string modbusIP = "192.168.2.102";
 
 int main()
 {
@@ -72,7 +73,7 @@ int main()
     //     hueController.toggleLamp(false, i);
     // }
 
-    const std::string modbusIP = "192.168.2.102";
+  
 
     // Setup connection
     modbus_t *ctx;
@@ -226,13 +227,13 @@ void updateLamps(uint16_t newLevel[], uint16_t newAuto[], uint16_t ids[], uint16
             if (newLevel[i] > 0)
             {
                 // Check if defLevel is equal to prevLevel
-                if (defLevel[i] != prevLevel[i])
+                if (newLevel[i] != prevLevel[i])
                 {
                     setLevel(newLevel[i], ids[i]);
                     toggleLamp(1, ids[i]);
 
                     // Set the previous level
-                    prevLevel[i] = defLevel[i];
+                    prevLevel[i] = newLevel[i];
                 }
             }
             else
